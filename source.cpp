@@ -1,161 +1,199 @@
 /*Name: Ethan Johnson
-Date: October 15, 2023
-Project Name: MyFitnessFriend (Midterm Porject)
-Project Description: MyFitnessPal is a calorie tracker that asks the user to enter information about themselves to calculate their maintenance calorie level.
-The user is given multiple meal and beverage options to choose from, and their choices will determine the total calorie count for that meal.*/
+Date: December 10, 2023
+Project Name: Final Project
+Project Description: This program is an online christmas shopping market. It starts by having the user create a username and password. 
+Then, it asks the user to enter which person they are shopping for. The respective wishlist will be shown.
+It lists items to purchase and allows for multiple items to be purchased. The items will be added to a cart via a file, and displayed after the order is complete.
+A receipt will be shown at the end with the opportunity to win a discount.*/
 
-#include <iostream>
-#include <iomanip>
-#include <cmath>
 #include<string>
+#include<cmath>
+#include<iomanip>
+#include<iostream>
+#include<fstream>
+#include<vector>
+#include<ctype.h>
 
 using namespace std;
 
+double taxFunction(double);
+double totalFunction(double, double);
+double discountFunction(int, double);
+
+const int ROWS = 3, COLS = 3;
+
 int main() {
 
-	string softwareName = "MyFitnessFriend", userName, meal1 = "6 eggs , 2 english muffins, & 1 banana", meal2 = "Shredded chicken thighs (12 ounces) & mashed potatoes (2 cups)", 
-		meal3 = "Ground beef (12 ounces) & white rice (1 cup)", meal4 = "Greek yogurt (2 cups) with frozen berries and granola", 
-		shake = "Protein shake (8 ounces of milk, 1 scoop of protein powder, 1 banana)", beverage1 = "Water", beverage2 = "Cranberry juice (12 ounces)", 
-		beverage3 = "Orange juice (12 ounces)", beverage4 = "Lemonade (12 ounces)", bodyWeightGoal1 = "Lose weight", bodyWeightGoal2 = "Maintain weight", bodyWeightGoal3 = "Lose weight";
-	const int MEAL_1_CALORIES = 780, MEAL_2_CALORIES = 600, MEAL_3_CALORIES = 770, MEAL_4_CALORIES = 580, SHAKE_CALORIES = 360, BEVERAGE_1_CALORIES = 0, BEVERAGE_2_CALORIES = 170,
-		BEVERAGE_3_CALORIES = 150, BEVERAGE_4_CALORIES = 105;
-	int mealNumber, beverageNumber, totalCalories, refillCount, beverageCalories, bodyWeightGoal, userActivityLevel;
-	double userBodyWeight, userHeight, userAge, maintenanceCalories;
-	char refillResponse, laterRefillResponse, userSex;
+	char upgradeChoice1, upgradeChoice2, extraItem;
+	int itemChoice, discountGuess;
+	string gameType, username, password, item1 = "Shirt", item2 = "Video Game", item3 = "Candle", shirtSize, word, personChoice,
+		listNames[ROWS] = { "Brother", "Sister", "Friend" },
+		shoppingList[ROWS][COLS] = {
+	{"XL Shirt", "Deluxe Video Game", "candle"},
+	{"S Shirt", "Standard Video Game", "candle"},
+	{"M Shirt", "Collector's Video Game", "candle"} };
+	double item1Price = 34.99, item2Price = 59.99, item3Price = 24.99, deluxePrice = 79.99, collectorsPrice = 99.99, subtotal = 0, taxAmount = 0, total = 0, discountedTotal = 0;
+	ifstream cartI("cart.txt");
+	ofstream cartO("cart.txt");
 
-	cout << "Welcome to " << softwareName << "!";
-	cout << "\n\nStart your log by entering your biological sex (M for male and F for female): ";
-	cin >> userSex;
-	cout << "\nEnter your bodyweight in kilograms, to the nearest decimal: ";
-	cin >> userBodyWeight;
-	cout << "\nEnter your height in centimeters to the nearest whole number: ";
-	cin >> userHeight;
-	cout << "\nEnter your age in years, rounded to the nearest whole number: ";
-	cin >> userAge;
-	cout << "\nEnter your weekly activity level on a scale of 1-3 (1 being little to no activity and 3 being high activity): ";
-	cin >> userActivityLevel;
+
+	cout << "Welcome to MarketOnline! Here for all of your online Christmas shopping needs.";
+	cout << "\n\nFirst, you must create an account. Please enter a username: ";
+	getline(cin, username);
 	
-	switch (userActivityLevel) {
-	case 1:
-		if (userActivityLevel == 1 && (userSex == 'm' || userSex == 'M')) {
-			maintenanceCalories = ceil(((10 * userBodyWeight) + (6.25 * userHeight) - (5 * userAge) + 5) * 1.2);
+	for (int i = 0; i < username.length(); i++) {
+		while (isspace(username[i]) != 0) {
+			cout << "\nPlease enter a new username without spaces. Username: ";
+			getline(cin, username);
 		}
-		else if (userActivityLevel == 1 && (userSex == 'f' || userSex == 'F')) {
-			maintenanceCalories = ceil(((10 * userBodyWeight) + (6.25 * userHeight) - (5 * userAge) - 161) * 1.2);
-		}
-		break;
-	case 2:
-		if (userActivityLevel == 2 && (userSex == 'm' || userSex == 'M')) {
-			maintenanceCalories = ceil(((10 * userBodyWeight) + (6.25 * userHeight) - (5 * userAge) + 5) * 1.55);
-		}
-		else if (userActivityLevel == 2 && (userSex == 'f' || userSex == 'F')) {
-			maintenanceCalories = ceil(((10 * userBodyWeight) + (6.25 * userHeight) - (5 * userAge) - 161) * 1.55);
-		}
-		break;
-	case 3:
-		if (userActivityLevel == 3 && (userSex == 'm' || userSex == 'M')) {
-			maintenanceCalories = ceil(((10 * userBodyWeight) + (6.25 * userHeight) - (5 * userAge) + 5) * 1.9);
-		}
-		else if (userActivityLevel == 3 && (userSex == 'f' || userSex == 'F')) {
-			maintenanceCalories = ceil(((10 * userBodyWeight) + (6.25 * userHeight) - (5 * userAge) - 161) * 1.9);
-		}
-		break;
-	default:
-		maintenanceCalories = 2000;
 	}
-	cout << "\nYour maintenance calorie level is approximately " << maintenanceCalories << " calories.";
 
-	cout << "\n\nFinally, enter your first and last name: ";
-	cin.ignore();
-	getline(cin, userName);
-	cout << "\nWelcome " << userName << ". The meal options are listed below: ";
-	cout << "\n1. " << meal1 << setw(55) <<  "Calories: " << MEAL_1_CALORIES;
-	cout << "\n2. " << meal2 << setw(31) << "Calories: " << MEAL_2_CALORIES;
-	cout << "\n3. " << meal3 << setw(49) << "Calories: " << MEAL_3_CALORIES;
-	cout << "\n4. " << meal4 << setw(40) << "Calories: " << MEAL_4_CALORIES;
-	cout << "\n5. " << shake << setw(24) << "Calories: " << SHAKE_CALORIES;
-	cout << "\n\nEnter the corresponding number for the meal you ate: ";
-	cin >> mealNumber;
+	cout << "\nThank you!";
+	cout << "\n\nNow, please enter a password: ";
+	getline(cin, password);
 
-	if (mealNumber == 1) {
-		totalCalories = MEAL_1_CALORIES;
-	}
-	else if (mealNumber == 2) {
-		totalCalories = MEAL_2_CALORIES;
-	}
-	else if (mealNumber == 3) {
-		totalCalories = MEAL_3_CALORIES;
-	}
-	else if (mealNumber == 4) {
-		totalCalories = MEAL_4_CALORIES;
-	}
-	else if (mealNumber == 5) {
-		totalCalories = SHAKE_CALORIES;
-	}
-	else {
-		cout << "\nPlease enter a valid meal option number.";
-	}
-	cout << "\nThank you! Your total calorie consumption is: " << totalCalories;
-
-	cout << "\n\nThe beverage options are listed below:";
-	cout << "\n1. " << beverage1 << setw(88) << "Calories: " << BEVERAGE_1_CALORIES;
-	cout << "\n2. " << beverage2 << setw(66) << "Calories: " << BEVERAGE_2_CALORIES;
-	cout << "\n3. " << beverage3 << setw(69) << "Calories: " << BEVERAGE_3_CALORIES;
-	cout << "\n4. " << beverage4 << setw(73) << "Calories: " << BEVERAGE_4_CALORIES;
-	cout << "\n\nEnter the corresponding number for the beverage option you would like to choose: ";
-	cin >> beverageNumber;
-
-	if (beverageNumber == 1) {
-		beverageCalories = BEVERAGE_1_CALORIES;
-		totalCalories += BEVERAGE_1_CALORIES;
-	}
-	else if (beverageNumber == 2) {
-		beverageCalories = BEVERAGE_2_CALORIES;
-		totalCalories += BEVERAGE_2_CALORIES;
-	}
-	else if (beverageNumber == 3) {
-		beverageCalories = BEVERAGE_3_CALORIES;
-		totalCalories += BEVERAGE_3_CALORIES;
-	}
-	else if (beverageNumber == 4) {
-		beverageCalories = BEVERAGE_4_CALORIES;
-		totalCalories += BEVERAGE_4_CALORIES;
-	}
-	else {
-		cout << "\nPlease enter a valid beverage option number.";
-	}
-	cout << "\nThank you! Your total calorie consumption is: " << totalCalories;
-
-	cout << "\n\nDid you have any beverage refills? Enter Y for yes and N for no: ";
-	cin >> refillResponse;
-
-	if (refillResponse == 'Y' || refillResponse == 'y') {
-		cout << "\nEnter the number of refills you had: ";
-		cin >> refillCount;
-		totalCalories += (beverageCalories * refillCount);
-		cout << "\nThank you! Your total calorie consumption is: " << totalCalories;
-	}
-	else if (refillResponse == 'N' || refillResponse == 'n') {
-		cout << "\nDo you plan to have any refills later? Enter Y for yes and N for no: ";
-		cin >> laterRefillResponse;
-		if (laterRefillResponse == 'Y' || laterRefillResponse == 'y') {
-			cout << "\nEnter the number of refills you plan to have: ";
-			cin >> refillCount;
-			totalCalories = totalCalories + (beverageCalories * refillCount);
-			cout << "\nThank you! Your total calorie consumption will be: " << totalCalories << ". I hope you enjoyed your meal!";
+	for (int i = 0; i < password.length(); i++) {
+		while (isspace(password[i]) != 0) {
+			cout << "\nPlease enter a new password without spaces. Password: ";
+			getline(cin, password);
 		}
-		else if (laterRefillResponse == 'N' || laterRefillResponse == 'n') {
-			cout << "\nThank you! I hope you enjoyed your meal!";
+	}
+
+	cout << "\nThank you. Your account is created.";
+
+	cartO << "Cart:";
+
+	cout << "\n\nEnter the person you are shopping for (Brother, Sister, or Friend): ";
+	cin >> personChoice;
+
+		if (personChoice == "Brother" || personChoice == "brother") {
+			cout << "\nShopping List: ";
+			for (int i = 0; i < COLS; i++) {
+				cout << ' ' << shoppingList[0][i] << endl;
+			}
+		}
+		else if (personChoice == "Sister" || personChoice == "sister") {
+			cout << "\nShopping List: ";
+			for (int i = 0; i < COLS; i++) {
+				cout << ' ' << shoppingList[1][i] << endl;
+			}
+		}
+		else if (personChoice == "Friend" || personChoice == "friend") {
+			cout << "\nShopping List: ";
+			for (int i = 0; i < COLS; i++) {
+				cout << ' ' << shoppingList[2][i] << endl;
+			}
 		}
 		else {
-			cout << "\nPlease enter a valid response.";
+			cout << "\nSorry, you entered an invalid person.";
 		}
-	}
-	else {
-		cout << "\nPlease enter a valid response.";
-	}
+
+		cout << "\nItems for sale are listed below:" << fixed << setprecision(2);
+		cout << "\n\n1. " << item1 << setw(31) << '$' << item1Price;
+		cout << "\n2. " << item2 << setw(26) << '$' << item2Price;
+		cout << "\n3. " << item3 << setw(30) << '$' << item3Price;
+
+		do {
+			cout << "\n\nEnter the number of the item you'd like to add to your cart: ";
+			cin >> itemChoice;
+
+			switch (itemChoice) {
+			case 1: // shirt
+				cout << "\nPlease enter your shirt size (XS, S, M, L, XL, XXL): ";
+				cin >> shirtSize;
+				cout << endl << shirtSize << " Shirt added to cart.";
+				cartO << endl << shirtSize << " shirt" << endl;
+				subtotal += item1Price;
+				break;
+			case 2: // video game
+				cout << "\nWould you like to upgrade your game version? Enter \"Y\" for yes or \"N\" for no: ";
+				cin >> upgradeChoice1;
+				if (upgradeChoice1 == 'Y' || upgradeChoice1 == 'y') {
+					cout << "\nThe deluxe version is $" << deluxePrice << " and includes the DLC season pass. Would you like to upgrade to the collector's addition for a total of $" << collectorsPrice << " which includes a limited edition collectible figure? Enter \"Y\" for yes or \"N\" for no: ";
+					cin >> upgradeChoice2;
+					if (upgradeChoice2 == 'Y' || upgradeChoice2 == 'y') {
+						subtotal += collectorsPrice;
+						gameType = "Collector's";
+					}
+					else {
+						subtotal += deluxePrice;
+						gameType = "Deluxe";
+					}
+				}
+				else {
+					subtotal += item2Price;
+					gameType = "Standard";
+				}
+				cout << endl << gameType << " edition video game added to cart.";
+				cartO << endl << gameType << " edition video game" << endl;
+				break;
+			case 3: // candle
+				cout << "\nCandle added to cart.";
+				cartO << endl << "Candle" << endl;
+				subtotal += item3Price;
+				break;
+			default: // invalid
+				cout << "\nYou entered an invalid item number. Please enter a valid number that corresponds to the items listed above: ";
+				cin >> itemChoice;
+			}
+			cout << "\n\nWould you like to purchase another item? Enter \"Y\" for yes or \"N\" for no: ";
+			cin >> extraItem;
+
+		} while (extraItem == 'Y' || extraItem == 'y');
+
+		taxAmount = taxFunction(subtotal);
+		total = totalFunction(subtotal, taxAmount);
+
+		cout << endl;
+			while (cartI >> word) {
+				cout << word << ' ';
+			}
+
+		cout << "\n\n~*~*~ Receipt ~*~*~";
+		cout << "\nSubtotal: " << setw(29) << '$' << subtotal;
+		cout << "\nTax: " << setw(34) << '$' << taxAmount;
+		cout << "\nTotal: " << setw(32) << '$' << total;
+
+		cout << "\n\nEnter the answer to 2+2 for 10% off: ";
+		cin >> discountGuess;
+
+		discountedTotal = discountFunction(discountGuess, total);
+
+		cartO.close();
+		cartI.close();
 
 	cout << endl << endl;
 	system("pause");
 	return 0;
+}
+
+double taxFunction(double subtotal) {
+	double taxAmount;
+	
+	taxAmount = subtotal * .07;
+
+	return taxAmount;
+}
+
+double totalFunction(double subtotal, double taxAmount) {
+	double total;
+
+	total = subtotal + taxAmount;
+
+	return total;
+}
+
+double discountFunction(int discountGuess, double total) {
+	double discountedTotal;
+
+	if (discountGuess == 4) {
+		discountedTotal = total * .90;
+		cout << "\nCorrect! Your new total is $" << discountedTotal;
+	}
+	else {
+		discountedTotal = total;
+		cout << "\nIncorrect. Your total will remain at $" << total;
+	}
+
+	return discountedTotal;
 }
